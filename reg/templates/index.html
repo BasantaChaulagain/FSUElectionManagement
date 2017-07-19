@@ -2,6 +2,10 @@
 {% block title %}Register{% endblock %}
 {% block content %}
 	
-  <h2>{{form_number}}-{{message}}</h2>
+  <h2>Welcome !</h2>
+  <br>
+  Register as a student:<a href={% url 'student' %}>Click Here </a>
+  <br>
+  View your info: <a href={% url 'viewdata' %}> Click Here </a>
 
 {% endblock %}

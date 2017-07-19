@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+{% block content %}
+	<!--form as a context-->
+
+  <h2>Your Details:</h2>
+  <br>
+	{%for field in result%}
+		{%for key,value in field.items%}
+			{{key}} : {{value}}
+			<br>
+		{%endfor%}
+	{%endfor%}
+
+{% endblock %}
