@@ -1,0 +1,231 @@
+
+from __future__ import unicode_literals
+
+from django.db import models
+
+
+class AuthGroup(models.Model):
+    name = models.CharField(unique=True, max_length=80)
+
+    class Meta:
+        db_table = 'auth_group'
+
+
+class AuthGroupPermissions(models.Model):
+    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
+    permission = models.ForeignKey('AuthPermission', models.DO_NOTHING)
+
+    class Meta:
+        db_table = 'auth_group_permissions'
+        unique_together = (('group', 'permission'),)
+
+
+class AuthPermission(models.Model):
+    name = models.CharField(max_length=255)
+    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING)
+    codename = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = 'auth_permission'
+        unique_together = (('content_type', 'codename'),)
+
+
+class AuthUser(models.Model):
+    password = models.CharField(max_length=128)
+    last_login = models.DateTimeField(blank=True, null=True)
+    is_superuser = models.IntegerField()
+    username = models.CharField(unique=True, max_length=150)
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
+    email = models.CharField(max_length=254)
+    is_staff = models.IntegerField()
+    is_active = models.IntegerField()
+    date_joined = models.DateTimeField()
+
+    class Meta:
+        db_table = 'auth_user'
+
+
+class AuthUserGroups(models.Model):
+    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
+    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
+
+    class Meta:
+        db_table = 'auth_user_groups'
+        unique_together = (('user', 'group'),)
+
+
+class AuthUserUserPermissions(models.Model):
+    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
+    permission = models.ForeignKey(AuthPermission, models.DO_NOTHING)
+
+    class Meta:
+        db_table = 'auth_user_user_permissions'
+        unique_together = (('user', 'permission'),)
+
+
+class Candidate(models.Model):
+    voter_id = models.IntegerField()
+    candidate_id = models.AutoField(primary_key=True)
+    party_id = models.IntegerField()
+    election_id = models.IntegerField()
+    post = models.CharField(max_length=50)
+    college_id = models.CharField(max_length=9)
+    college = models.IntegerField()
+    votes = models.IntegerField()
+    symbol = models.TextField()
+    is_verified = models.IntegerField()
+
+    class Meta:
+        db_table = 'candidate'
+
+
+class College(models.Model):
+    college_id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = 'college'
+
+
+class DjangoAdminLog(models.Model):
+    action_time = models.DateTimeField()
+    object_id = models.TextField(blank=True, null=True)
+    object_repr = models.CharField(max_length=200)
+    action_flag = models.SmallIntegerField()
+    change_message = models.TextField()
+    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING, blank=True, null=True)
+    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
+
+    class Meta:
+        db_table = 'django_admin_log'
+
+
+class DjangoContentType(models.Model):
+    app_label = models.CharField(max_length=100)
+    model = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = 'django_content_type'
+        unique_together = (('app_label', 'model'),)
+
+
+class DjangoMigrations(models.Model):
+    app = models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
+    applied = models.DateTimeField()
+
+    class Meta:
+        db_table = 'django_migrations'
+
+
+class DjangoSession(models.Model):
+    session_key = models.CharField(primary_key=True, max_length=40)
+    session_data = models.TextField()
+    expire_date = models.DateTimeField()
+
+    class Meta:
+        db_table = 'django_session'
+
+
+class Election(models.Model):
+    election_id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=100)
+    year = models.TextField()  # This field type is a guess.
+
+    class Meta:
+        db_table = 'election'
+
+
+class Party(models.Model):
+    party_id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=100)
+    registration_no = models.IntegerField()
+    symbol = models.TextField()
+
+    class Meta:
+        db_table = 'party'
+
+
+class Staff(models.Model):
+    staff_id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=50)
+    sex = models.CharField(max_length=6)
+    citizenship_no = models.IntegerField()
+    college = models.IntegerField()
+    position = models.CharField(max_length=50)
+    photo = models.IntegerField()
+    dob = models.DateField()
+    citizenship_scan = models.TextField()
+
+    class Meta:
+        db_table = 'staff'
+
+
+class Student(models.Model):
+    voter_id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=100)
+    sex = models.CharField(max_length=6)
+    dob = models.DateField()
+    disability = models.CharField(max_length=50)
+    college_id = models.CharField(max_length=9)
+    college = models.IntegerField()
+    citizenship_no = models.CharField(max_length=20)
+    photo = models.TextField()
+    is_verified = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = 'student'
+
+    def __str__(self):              
+        return self.name
+
+
+class WinnerReport(models.Model):
+    post = models.CharField(primary_key=True,max_length=50)
+    candidate_id = models.IntegerField()
+    votes = models.IntegerField()
+    election_id = models.IntegerField()
+
+    class Meta:
+        db_table = 'winner_report'
+
+
+
+
+//forms
+
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+{% block content %}
+ <h1>Fill Up - Student Form</h1>
+<center>
+ <form action="{% url 'student' %}" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+ {% if form.errors %}
+    {% for field in form %}
+        {{field}} 
+        {% for error in field.errors %}
+            <div class="alert alert-danger">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+
+        <br><br>
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+    Non Field Error:
+        <div class="alert alert-danger">
+            <strong>{{ error }}</strong>
+        </div>
+    {% endfor %}
+
+{%else%}
+{{form.as_p}}
+
+{% endif %}
+
+  <input type="submit" value="Register" />
+  </form>
+</center>
+{% endblock %}
