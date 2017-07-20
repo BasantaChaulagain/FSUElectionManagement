@@ -25,11 +25,9 @@ class Student(models.Model):
     class Meta:
         db_table = 'student'
 
-    def get_fields(self):
-        return [(field.name, field.value_to_string(self)) for field in Student._meta.fields]
 
-    def __str__(self):              
-        return (str(self.voter_id)+'    |    '+self.name+'    |    '+self.citizenship_no)
+
+
 
 
 

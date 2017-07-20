@@ -37,10 +37,10 @@ def viewdata(request):
 		querynum=request.POST.get("citz", "")
 		if Student.objects.all().filter(citizenship_no = querynum).exists():
 			result = Student.objects.all().filter(citizenship_no = querynum).values()
+			img = result[0].get("photo")
 		else:
 			result = "Your data is not in the database."
-
-		context = { 'result':result }
+		context = { 'result':result, 'img':img}
 		return HttpResponse(t.render(context))
 
 	else:

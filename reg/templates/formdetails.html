@@ -5,8 +5,12 @@
 
   <h2>Your Details:</h2>
   <br>
-	{%for field in result%}
-		{%for key,value in field.items%}
+
+	<img src="/media/{{img}}" height=200, width=200  /> <br>
+
+	{%for object in result%}
+
+		{%for key,value in object.items%}
 			{{key}} : {{value}}
 			<br>
 		{%endfor%}
