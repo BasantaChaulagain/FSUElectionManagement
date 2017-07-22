@@ -7,8 +7,9 @@ from django.db import models
 gender = (
     ('Male', 'Male'), #(what to be entered, what to be shown)
     ('Female', 'Female'),
-
 )
+
+
 
 class Student(models.Model):
     voter_id = models.AutoField(primary_key=True)
@@ -25,9 +26,8 @@ class Student(models.Model):
     class Meta:
         db_table = 'student'
 
-
-
-
+    def __str__(self):              
+        return (str(self.voter_id)+'    |    '+self.name+'    |    '+self.citizenship_no)
 
 
 
@@ -39,12 +39,15 @@ class Candidate(models.Model):
     post = models.CharField(max_length=50)
     college_id = models.CharField(max_length=9)
     college = models.IntegerField()
-    votes = models.IntegerField()
-    symbol = models.TextField()
-    is_verified = models.IntegerField()
+    votes = models.IntegerField(default=0)
+    symbol = models.FileField(upload_to='candidate-symbol')
+    is_verified = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'candidate'
+
+    def __str__(self):              
+        return (str(self.candidate_id)+'    |    '+str(self.post)+'    |    '+str(self.party_id))
 
 
 class College(models.Model):

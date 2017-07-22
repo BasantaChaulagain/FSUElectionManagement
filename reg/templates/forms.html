@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block title %}Register{% endblock %}
 {% block content %}
-<h1>Fill Up - Student Form</h1>
+<h1>{{message}}</h1>
 
-<form action="{% url 'student' %}" method="post" enctype="multipart/form-data">
+<form action="{% url form_url %}" method="post" enctype="multipart/form-data">
 
 {% csrf_token %}
 

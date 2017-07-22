@@ -9,26 +9,54 @@ from .models import Student
 
 def index(request):
 	t=loader.get_template('index.html')
-	context = {'message':'Hey, this is working !'}
+	context = {}
 	return HttpResponse(t.render(context))
 
 
 
 def student(request):
+	message = "Fill Up - Student Form"
 	if request.method == "POST":
 		t=loader.get_template('index.html')
 		form = forms.StudentForm(request.POST, request.FILES)
 		if form.is_valid():
 			saved_form=form.save()
-			context = { 'form_number':saved_form.pk, 'message': "numbered form is received" }
+			context = { 'form_number':"Your form number"+saved_form.pk, 'message': "Form is received" }
 			return HttpResponse(t.render(context))
 	else:
 		form = forms.StudentForm()
 		token={}
 		token.update(csrf(request))
 
-	token = {'form':form}
-	return render(request, 'forms.html', {'form': form})
+	token = {'form':form, 'form_url':'student', 'message':message}
+	return render(request, 'forms.html', token)
+
+
+def candidate(request):
+	message = "Fill Up - Candidate Form"
+	if request.method == "POST":
+		t=loader.get_template('index.html')
+		form = forms.CandidateForm(request.POST, request.FILES)
+		if form.is_valid():
+			obj=form.save(commit=False)
+			v_id=obj.voter_id
+			if Student.objects.all().filter(voter_id = v_id).exists():
+				student_object=Student.objects.get(voter_id = v_id)
+				obj.election_id=1 #need to change later
+				saved_form=obj.save()
+				context = { 'form_number':"Your form number"+obj.candidate_id, 'message': "Form is received" }
+				return HttpResponse(t.render(context))
+			else:
+				message = "You have not been registered as student. Get registered  before applying for the candidate."
+		else:
+			message="Registration Failed. Please try again."
+	else:
+		form= forms.CandidateForm()
+		token={}
+		token.update(csrf(request))
+
+	token = {'form':form, 'message':message, 'form_url':'candidate'}
+	return render(request, 'forms.html', token)
 
 
 def viewdata(request):
